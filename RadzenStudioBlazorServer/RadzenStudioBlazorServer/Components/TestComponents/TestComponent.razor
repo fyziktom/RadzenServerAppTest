@@ -1,0 +1,49 @@
+﻿@using Services
+@using Models
+
+@inject ITestService TestService
+
+<RadzenRow>
+    <RadzenColumn>
+        <RadzenText Text="Hello" />
+    </RadzenColumn>
+</RadzenRow>
+<RadzenRow>
+    <RadzenColumn>
+        <RadzenButton Text="Hello" Click="@TestClick" />
+    </RadzenColumn>
+</RadzenRow>
+<RadzenRow>
+    <RadzenColumn>
+                <RadzenDataGrid TItem="TestModel" AllowFiltering="true" AllowColumnResize="true" AllowAlternatingRows="false" FilterMode="FilterMode.Advanced" AllowSorting="true" PageSize="5" AllowPaging="true" PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true"
+                    Data="@TestService.Models" ColumnWidth="300px" LogicalFilterOperator="LogicalFilterOperator.Or" SelectionMode="DataGridSelectionMode.Single" Value=@selected ValueChanged="@onValueChanged">
+            <Columns>
+                <RadzenDataGridColumn Property="@nameof(TestModel.TestProperty)" Filterable="false" Title="Test" Frozen="true" Width="80px" TextAlign="TextAlign.Center" />
+                <RadzenDataGridColumn Property="@nameof(TestModel.TestPropertyDouble)" Title="Double" Frozen="true" Width="160px" />
+            </Columns>
+        </RadzenDataGrid>
+    </RadzenColumn>
+</RadzenRow>
+
+@code {
+    string res = string.Empty;
+    IList<TestModel> selected;
+
+    public string selectedId => selected.FirstOrDefault()?.Id ?? string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        res = await TestService.TestFunction();
+    }
+
+    public async Task onValueChanged(IList<TestModel> value)
+    {
+        selected = value;
+        await InvokeAsync(StateHasChanged);
+    }
+
+    public async Task TestClick()
+    {
+        Console.WriteLine("Test.");
+    }
+}
